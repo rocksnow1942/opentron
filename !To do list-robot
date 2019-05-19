@@ -1,0 +1,28 @@
+To do list:
+0. after each task, confirm to save the task, otherwise start over again.
+    a. save task when something went wrong.
+    b. pick up the saved task from half finished task
+    c. or raise error when didn't enter correct format.
+1. customizable deck_plan : option to build own deck_plan from scratch.
+2. add more deck labware support.
+4. ls change list parser to avoid error when bracket is in typed sequence.
+
+5. able to change saved protocol
+
+6. during review, able to change protocol.
+
+
+
+9. calibrate deck protocol.
+
+
+
+
+
+
+
+
+Finished updates:
+X7. change elisa plate top so that blow_out then position for aspirate behavior will be normal location arg
+x3. single distribute change tip every time - single distribute will change tip every time from a different source.
+X8. add ability to view process during final parameter entering.
