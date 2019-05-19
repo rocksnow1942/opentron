@@ -4,6 +4,7 @@
 __pycache__/
 *.py[cod]
 run.py
+.ipynb_checkpoints
 # C extensions
 *.so
 

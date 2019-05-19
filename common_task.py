@@ -245,50 +245,6 @@ def initialize_volume(source, source_vol):
             if l not in tube_vol.keys():
                 tube_vol[l] = ll(volume=vol,labware=lw)
 
-
-
-# def multi_distribute_liquid(volume=0,source=None,target=None,source_vol='0ul',target_vol=0,aspirate_offset=-1,dispense_offset=5,aspirate_speed=150,dispense_speed=150,**kwarg):
-#     """
-#     distribute liquid from location a to b with multi pipette. Will not change tip unless using [].
-#     volume / source / target / source_vol / target_vol should be single or list of equal length.
-#     volume : float or list, volume to distribute in ul
-#     source : str or list, well slice syntax
-#     target : str or list, well slice syntax
-#         * one of source/target should have only 1 column or source/target have same number of columns.
-#         * if source has 1 column, distribute from source to all columns of target.
-#         * if target has 1 column, distribute all source columns to same target column.
-#         * if target cols # = source cols #, distribute from each col of source to target respectively.
-#     source_vol : str or list, '100ul' or '10ml'
-#     target_vol : float or list, volume of liquid in target location in ul
-#     aspirate_offset, dispense_offset: float, distance in mm of the tip position relative to liquid surface.
-#     aspirate_speed,dispense_speed: float, speed of pipette in ul/s
-#     """
-#     if not isinstance(target, list):
-#         initialize_volume(source,source_vol)
-#         if target.lower() == 'trash':
-#             target = '9-A6'
-#             target_vol = 20000
-#             dispense_offset = -20
-#         initialize_volume(target,str(target_vol)+'ul')
-#         multi_pipette.set_flow_rate(aspirate=aspirate_speed,dispense=dispense_speed)
-#         multi_pipette.pick_up_tip(presses=tip_presses, increment=tip_press_increment)
-#         source_label,_,source = lab_deck_parser(source)
-#         target_label,_,target = lab_deck_parser(target)
-#         if len(source_label) == 1:
-#             source_label = source_label * len(target_label)
-#         if len(target_label) == 1:
-#             target_label = target_label * len(source_label)
-#         for a,b in zip(source_label,target_label):
-#             multi_pipette.transfer(volume, tube_vol[a].surface(-volume,aspirate_offset), tube_vol[b].surface(volume,dispense_offset), new_tip='never')
-#             multi_pipette.blow_out()._position_for_aspirate()
-#             multi_pipette.delay(seconds=1).blow_out()._position_for_aspirate()
-#         multi_pipette.drop_tip()
-#     else:
-#         for v,s,sv,t,tv in zip(volume,source,source_vol,target,target_vol):
-#             multi_distribute_liquid(volume=v,source=s,source_vol=sv,target=t,target_vol=tv,aspirate_offset=aspirate_offset, dispense_offset=dispense_offset,aspirate_speed=aspirate_speed,dispense_speed=dispense_speed,**kwarg)
-
-
-
 def multi_distribute_liquid(volume=0,source=None,target=None,source_vol='0ul',target_vol=0,aspirate_offset=-1,dispense_offset=5,aspirate_speed=150,dispense_speed=150,pick_tip=True,tip_location=None,reuse_tip=False,remove_residual=False,**kwarg):
     """
     distribute liquid from location a to b with multi pipette. Will not change tip unless using [].
