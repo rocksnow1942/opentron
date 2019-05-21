@@ -30,6 +30,9 @@ class labware_volume:
     def surface(self,pipette_out_volume,offset=0):
         return self.labware.bottom(self.depth_judge(pipette_out_volume,offset))
     def depth_judge(self,volume,offset):
+        """
+        if offset is not too big, will only go down to 1 above zero.
+        """
         depth = self.pipette_out(volume)
         if offset < -9.9:
             result = max(0,depth+offset)

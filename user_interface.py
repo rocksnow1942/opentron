@@ -5,7 +5,7 @@ import common_task as ct
 
 # save_path is the location to store saved protocols.
 # save_path = '/data/user_storage/opentrons_data/jupyter/saved_protocols'
-save_path = '/Users/hui/Scripts/!misc/opentron_scripts/custom_script/saved_protocol'
+save_path = '/Users/hui/Scripts/opentron_scripts/custom/saved_protocol'
 save_path_len = len(save_path)+1
 
 """
@@ -75,7 +75,7 @@ def print_deck_plans():
     print("1).default : 1/3:elisa strip; 2:trough; 4:15-50ml rack; 5:ep rack; 9:trash")
     print('2).default-1ml-Plate : *1:1ml-PP plate*; 2:trough; 3:elisa strip; 4:15-50ml rack; 5:ep rack; 9:trash')
     print("3).default-5ml : 1/3:elisa strip; 2:trough; *4:5ml-50ml rack*; 5:ep rack; 9:trash")
-    print('4).default-mag : *1:magnet*; 2:trough; 3:elisa strip; 4:15-50ml rack; 5:ep rack; 9:trash')
+    print('4).default-mag : 1/3/5/6:elisa plate; 2:trough; *4:Magnet Module*; 9:trash')
 
 def print_available_operations():
     """
@@ -225,9 +225,7 @@ def lp_input(type_, prompt):
     return result
 
 
-
-
-def execute_plan(operation_para):
+def execute_plan(operation_para,manual=False):
     """
     with the operation_para dict as input, print out the plan details first. if confirm to execute,
     execute the plan.
@@ -240,7 +238,14 @@ def execute_plan(operation_para):
     print('\n'+'+'*50+'\n')
     if input('Review the parameters. Ready to execute? y/n : ') == 'y':
         print("Starting protocol ......")
-        for i in sorted(operation_para.keys()):
+        for i in sorted(operation_para.keys(),key=lambda x:float(x.replace('-','.'))):
+            if manual:
+                prompt = 'Run step {}: {}, enter y to continue,n to abort...'.format(i,operation_para[i]['name'])
+                confirm = input(prompt)
+                if confirm=='y':
+                    pass
+                elif confirm=='n':
+                    continue
             operation = operation_interpreter(operation_para[i]['name'])
             operation(**operation_para[i]['parameter'])
             print('Step {} is done!'.format(i))
@@ -269,6 +274,10 @@ def operation_interpreter(step_name):
         operation = ct.multi_mix
     elif step_name in ['single-mix','smx']:
         operation = ct.single_mix
+    elif step_name in ['toggle_mag','tm']:
+        operation = ct.toggle_mag
+    elif step_name in ['on_hold','oh']:
+        operation =ct.on_hold
     else:
         raise ValueError ('Don\'t understand the task.')
     return operation
@@ -337,39 +346,85 @@ def read_saved_protocol(file_path):
         para = json.load(file)
     print('+'*50)
     print("Type in parameters for the protocol:")
-    for step,item in para.items():
-        for key,value in item['parameter'].items():
-            if str(value)[0] == '*':
-                # new_value = input(key+value)
-                para[step]['parameter'][key] = lp_input('',(key+value))
+    if para.get('preset',False):
+        raise ValueError ('Run Preset protocols in Preset files.')
+    else:
+        for step,item in para.items():
+            for key,value in item['parameter'].items():
+                if str(value)[0] == '*':
+                    # new_value = input(key+value)
+                    para[step]['parameter'][key] = lp_input('',(key+value))
     return para
 
 
+def preset_reader(preset,manual=False,**kwargs):
+    assert kwargs['name']==preset,("Parameters and protocol doesn't match.")
+    preset_location='/Users/hui/Scripts/opentron_scripts/custom/saved_protocol/common/RIC50_IC50_Step1_SerialDilute.json'
+    with open(preset_location,'rt') as file:
+        para = json.load(file)[preset]
+    pp = kwargs.get('plate_position')
+    np = kwargs.get('number_of_points')
+    bp = kwargs.get('buffer_in_well')
+    abp = kwargs.get('antibody_in_well')
+    df = kwargs.get('dilution_factor')
+    bdp = kwargs.get('beads_in_well')
+    para["0-2"]['parameter']['multi_tip_starting_position']='A'+str(kwargs['tip_start_positoin'])
+    if preset in ['serial_dilution','IC50_test','add_beads']:
+        fill_para(para,'bufferposition','2-A'+str(bp))
+        fill_para(para,'buffervolume',str(8*(np-1)*0.1+1)+'ML')
+        fill_para(para,'addbufferloc',str(pp)+'-2:'+str(np))
+        fill_para(para,'serialdilutionposition',str(pp)+'-1:'+str(np-1))
+        fill_para(para,'df',df)
+        fill_para(para,'beadsposition','2-A'+str(bdp))
+        fill_para(para,'beadsvolume',str(8*np*0.05+1)+'ML')
+        fill_para(para,'addbeadsposition',str(pp)+'-1:'+str(np))
+    elif preset in ['add_antibody','resuspend']:
+        fill_para(para,'magplate','4-1:'+str(np))
+        fill_para(para,'bufferposition','2-A'+str(bp))
+        fill_para(para,'antibodyposition','2-A'+str(abp))
+        fill_para(para,'antibodyvolume',str(8*(np)*0.1+1)+'ML')
+        fill_para(para,'magnetheight',13.3)
+        fill_para(para,'magnettime',120)
+    # print(para)
+    execute_plan(para,manual=manual)
 
 
-input('Get start?')
-print('+'*50+'\n')
-print("What to do?\n 1). create protocol and run \n 2). create protocol and save\n 3). run saved protocol\n manual mode \n")
-job_to_do = input('Choose one (1,2,3) : ')
-print('+'*50+'\n')
-if job_to_do == '1':
-    para = build_operation_para()
-    execute_plan(para)
-elif job_to_do == '2':
-    para = build_operation_para()
-    file = save_plan(para)
-    if input("Run the saved protocol now? y/n : ") == 'y':
-        new_para = read_saved_protocol(file)
-        execute_plan(new_para)
+def fill_para(para,key,value):
+    """
+    fill parameter keyword with a give value.
+    """
+    for k,i in para.items():
+        for n,m in i.items():
+            if n=='parameter':
+                for o,p in m.items():
+                    if p==key:
+                        para[k][n][o]=value
+
+
+if __name__=='__main__':
+    input('Get start?')
+    print('+'*50+'\n')
+    print("What to do?\n 1). create protocol and run \n 2). create protocol and save\n 3). run saved protocol\n manual mode \n")
+    job_to_do = input('Choose one (1,2,3) : ')
+    print('+'*50+'\n')
+    if job_to_do == '1':
+        para = build_operation_para()
+        execute_plan(para)
+    elif job_to_do == '2':
+        para = build_operation_para()
+        file = save_plan(para)
+        if input("Run the saved protocol now? y/n : ") == 'y':
+            new_para = read_saved_protocol(file)
+            execute_plan(new_para)
+        else:
+            pass
+    elif job_to_do == '3':
+        file = choose_saved_protocol()
+        para = read_saved_protocol(file)
+        execute_plan(para)
+    elif job_to_do == 'manual':
+        print("Using manual mode:")
+        print("Use ct.load_deck(deck_plan='default') to connect to robot.")
+        print('Use dir(ct) and help(ct.function) for help doc.')
     else:
-        pass
-elif job_to_do == '3':
-    file = choose_saved_protocol()
-    para = read_saved_protocol(file)
-    execute_plan(para)
-elif job_to_do == 'manual':
-    print("Using manual mode:")
-    print("Use ct.load_deck(deck_plan='default') to connect to robot.")
-    print('Use dir(ct) and help(ct.function) for help doc.')
-else:
-    print("Don\'t understand.")
+        print("Don\'t understand.")

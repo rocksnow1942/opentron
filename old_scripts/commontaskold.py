@@ -47,9 +47,9 @@ def load_deck(deck_plan='default',**kwarg):
     2).default-5ml : 1/3:elisa strip; 2:trough; *4:5ml-50ml rack*; 5:ep rack; 9:trash"
     3).default-mag : *1:magnet*; 2:trough; 3:elisa strip; 4:15-50ml rack; 5:ep rack; 9:trash'
     """
-    global trough,liquid_trash,tip_rack,single_tip_rack,elisa_strip,ep_rack,tube_rack,multi_pipette,single_pipette,elisa_strip_2
+
     if deck_plan == 'default':
-        # global trough,liquid_trash,tip_rack,single_tip_rack,elisa_strip,ep_rack,tube_rack,multi_pipette,single_pipette,elisa_strip_2
+        global trough,liquid_trash,tip_rack,single_tip_rack,elisa_strip,ep_rack,tube_rack,multi_pipette,single_pipette,elisa_strip_2
         initialize(**kwarg)
         elisa_strip_2 = labware.load('elisa_strip','1')
         trough = labware.load('trough-12row', '2')
@@ -67,7 +67,6 @@ def load_deck(deck_plan='default',**kwarg):
                     mount='right',
                     tip_racks=single_tip_rack)
     elif deck_plan == 'default-1ml-plate':
-        # global trough,liquid_trash,tip_rack,single_tip_rack,elisa_strip,ep_rack,tube_rack,multi_pipette,single_pipette,elisa_strip_2
         initialize(**kwarg)
         pp_plate = labware.load('ams_1ml_pp_plate','1')
         trough = labware.load('trough-12row', '2')
@@ -87,20 +86,17 @@ def load_deck(deck_plan='default',**kwarg):
     elif deck_plan == 'default-mag':
         kwarg['magnet']=True
         initialize(**kwarg)
-        global mag_deck,mag_plate,elisa_strip_3,elisa_strip_4
-        mag_deck = modules.load('magdeck', '4')
-        mag_plate = labware.load('pp_plate_mag','4',share = True)
+        global mag_deck,mag_plate
+        mag_deck = modules.load('magdeck', '1')
+        mag_plate = labware.load('pp_plate_mag','1',share = True)
         trough = labware.load('trough-12row', '2')
         liquid_trash = labware.load('trough-12row', '9')
         tip_rack = [labware.load('tiprack-200ul', slot) for slot in ['7','8']]
         single_tip_rack = [labware.load('tiprack-200ul',slot) for slot in ['10','11']]
         elisa_strip = labware.load('elisa_strip','3')
-        elisa_strip_2 = labware.load('elisa_strip','1')
-        elisa_strip_3 = labware.load('elisa_strip','5')
-        elisa_strip_4 = labware.load('elisa_strip','6')
-        # ep_rack = labware.load('tube-rack-eppendorf','5')
-        # tube_rack = labware.load('tube-rack-15_50ml_apt','4')
-        deck_plan_.update([('5',elisa_strip_3),('1',elisa_strip_2),('4',mag_plate),('2',trough),('6',elisa_strip_4),('3',elisa_strip),('9',liquid_trash)])
+        ep_rack = labware.load('tube-rack-eppendorf','5')
+        tube_rack = labware.load('tube-rack-15_50ml_apt','4')
+        deck_plan_.update([('5',ep_rack),('4',tube_rack),('1',mag_plate),('2',trough),('3',elisa_strip),('9',liquid_trash)])
         multi_pipette = instruments.P300_Multi(
                     mount='left',
                     tip_racks=tip_rack)
@@ -248,6 +244,50 @@ def initialize_volume(source, source_vol):
             if l not in tube_vol.keys():
                 tube_vol[l] = ll(volume=vol,labware=lw)
 
+
+
+# def multi_distribute_liquid(volume=0,source=None,target=None,source_vol='0ul',target_vol=0,aspirate_offset=-1,dispense_offset=5,aspirate_speed=150,dispense_speed=150,**kwarg):
+#     """
+#     distribute liquid from location a to b with multi pipette. Will not change tip unless using [].
+#     volume / source / target / source_vol / target_vol should be single or list of equal length.
+#     volume : float or list, volume to distribute in ul
+#     source : str or list, well slice syntax
+#     target : str or list, well slice syntax
+#         * one of source/target should have only 1 column or source/target have same number of columns.
+#         * if source has 1 column, distribute from source to all columns of target.
+#         * if target has 1 column, distribute all source columns to same target column.
+#         * if target cols # = source cols #, distribute from each col of source to target respectively.
+#     source_vol : str or list, '100ul' or '10ml'
+#     target_vol : float or list, volume of liquid in target location in ul
+#     aspirate_offset, dispense_offset: float, distance in mm of the tip position relative to liquid surface.
+#     aspirate_speed,dispense_speed: float, speed of pipette in ul/s
+#     """
+#     if not isinstance(target, list):
+#         initialize_volume(source,source_vol)
+#         if target.lower() == 'trash':
+#             target = '9-A6'
+#             target_vol = 20000
+#             dispense_offset = -20
+#         initialize_volume(target,str(target_vol)+'ul')
+#         multi_pipette.set_flow_rate(aspirate=aspirate_speed,dispense=dispense_speed)
+#         multi_pipette.pick_up_tip(presses=tip_presses, increment=tip_press_increment)
+#         source_label,_,source = lab_deck_parser(source)
+#         target_label,_,target = lab_deck_parser(target)
+#         if len(source_label) == 1:
+#             source_label = source_label * len(target_label)
+#         if len(target_label) == 1:
+#             target_label = target_label * len(source_label)
+#         for a,b in zip(source_label,target_label):
+#             multi_pipette.transfer(volume, tube_vol[a].surface(-volume,aspirate_offset), tube_vol[b].surface(volume,dispense_offset), new_tip='never')
+#             multi_pipette.blow_out()._position_for_aspirate()
+#             multi_pipette.delay(seconds=1).blow_out()._position_for_aspirate()
+#         multi_pipette.drop_tip()
+#     else:
+#         for v,s,sv,t,tv in zip(volume,source,source_vol,target,target_vol):
+#             multi_distribute_liquid(volume=v,source=s,source_vol=sv,target=t,target_vol=tv,aspirate_offset=aspirate_offset, dispense_offset=dispense_offset,aspirate_speed=aspirate_speed,dispense_speed=dispense_speed,**kwarg)
+
+
+
 def multi_distribute_liquid(volume=0,source=None,target=None,source_vol='0ul',target_vol=0,aspirate_offset=-1,dispense_offset=5,aspirate_speed=150,dispense_speed=150,pick_tip=True,tip_location=None,reuse_tip=False,remove_residual=False,**kwarg):
     """
     distribute liquid from location a to b with multi pipette. Will not change tip unless using [].
@@ -269,7 +309,7 @@ def multi_distribute_liquid(volume=0,source=None,target=None,source_vol='0ul',ta
         if target.lower() == 'trash':
             target = '9-A6'
             target_vol = 20000
-            dispense_offset = 0
+            dispense_offset = -20
         initialize_volume(target,str(target_vol)+'ul')
         multi_pipette.set_flow_rate(aspirate=aspirate_speed,dispense=dispense_speed)
         if pick_tip:
@@ -321,7 +361,7 @@ def single_distribute_liquid(volume=0,source=None,target=None,source_vol='0ul',t
         if target.lower() == 'trash':
             target = '9-A6'
             target_vol = 20000
-            dispense_offset = 0
+            dispense_offset = -20
         initialize_volume(target,str(target_vol)+'ul')
         single_pipette.set_flow_rate(aspirate=aspirate_speed,dispense=dispense_speed)
         source_label,_,source = lab_deck_parser(source)
@@ -534,6 +574,8 @@ def mag_wash(wash_location=None,buffer_location=None,buffer_vol='5ml',wash_vol= 
             else:
                 wash_tip = multi_distribute_liquid(volume=wash_vol,source=wash_location,target='trash',pick_tip=False,remove_residual=True,reuse_tip=False)
             mag_deck.disengage()
+
+
 
 
 def mag_wash_v2(wash_location=None,buffer_location=None,buffer_vol='5ml',wash_vol= 150,wash_no=3, mix_no=5, mag_height=13.3, mag_time=60, **kwarg):
