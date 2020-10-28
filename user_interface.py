@@ -1,13 +1,16 @@
 import ast,json,glob,os,re
 import sys
-# sys.path.append("/data/user_storage/opentrons_data/jupyter/modules_storage")
+sys.path.insert(0,"/data/user_storage/opentrons_data/jupyter/modules_storage")
 import common_task as ct
 
-# save_path is the location to store saved protocols.
+
+
+# save_path is the location to store saved protocols. # for opentron, use commented path.
 # save_path = '/data/user_storage/opentrons_data/jupyter/saved_protocols'
+# preset_location = '/data/user_storage/opentrons_data/jupyter/saved_protocols/!common_protocol/RIC50_IC50_Preset.json'
 save_path = '/Users/hui/Scripts/opentron_scripts/custom/saved_protocol'
 save_path_len = len(save_path)+1
-
+preset_location = '/Users/hui/Documents/Scripts/opentron_scripts/custom/saved_protocol/common/commont_protocols.json'
 """
 UI note:
 
@@ -107,8 +110,6 @@ def capture_input():
         else:
             pass
     return step
-
-
 
 
 def para_fetcher(step_name):
@@ -246,6 +247,15 @@ def execute_plan(operation_para,manual=False):
                     pass
                 elif confirm=='n':
                     continue
+            #Ugly intercept just for TMB development time
+            if operation_para[i]['name']=='wf' and operation_para[i]['parameter']['delay'] == 0:
+                prompt = 'Wait for develop. Enter y to add Stop, enter n to abort.'.format(i,operation_para[i]['name'])
+                confirm = input(prompt)
+                if confirm=='y':
+                    continue
+                elif confirm=='n':
+                    break
+            #Ugly intercept just for TMB development time
             operation = operation_interpreter(operation_para[i]['name'])
             operation(**operation_para[i]['parameter'])
             print('Step {} is done!'.format(i))
@@ -278,6 +288,8 @@ def operation_interpreter(step_name):
         operation = ct.toggle_mag
     elif step_name in ['on_hold','oh']:
         operation =ct.on_hold
+    elif step_name in ['wait_for','wf']:
+        operation =ct.wait_for
     else:
         raise ValueError ('Don\'t understand the task.')
     return operation
@@ -359,7 +371,6 @@ def read_saved_protocol(file_path):
 
 def preset_reader(preset,manual=False,**kwargs):
     assert kwargs['name']==preset,("Parameters and protocol doesn't match.")
-    preset_location='/Users/hui/Scripts/opentron_scripts/custom/saved_protocol/common/RIC50_IC50_Step1_SerialDilute.json'
     with open(preset_location,'rt') as file:
         para = json.load(file)[preset]
     pp = kwargs.get('plate_position')
@@ -385,7 +396,24 @@ def preset_reader(preset,manual=False,**kwargs):
         fill_para(para,'antibodyvolume',str(8*(np)*0.1+1)+'ML')
         fill_para(para,'magnetheight',13.3)
         fill_para(para,'magnettime',120)
-    # print(para)
+
+    elif preset in ['add_TMB']:
+        fill_para(para, 'TMB_in_well', '2-A'+str(kwargs.get('TMB_in_well')))
+        fill_para(para, 'TMB_to_add', kwargs.get('TMB_to_add'))
+        fill_para(para, 'tmbvolume', str(
+            8*np*kwargs.get('TMB_to_add')/1000+1)+'ML')
+        fill_para(para, 'addbeadsposition', str(pp)+'-1:'+str(np))
+        if kwargs.get('develop_time')>=0:
+            fill_para(para, 'develop_time', kwargs.get('develop_time'))
+            fill_para(para, 'stop_in_well', '2-A'+str(kwargs.get('stop_in_well')))
+            fill_para(para, 'stop_to_add', kwargs.get('stop_to_add'))
+            fill_para(para, 'stopvolume', str(
+                8*np*kwargs.get('stop_to_add')/1000+1)+'ML')
+        else:
+            para.pop('2')
+            para.pop('3')
+
+    print(para)
     execute_plan(para,manual=manual)
 
 

@@ -4,12 +4,14 @@ steps: initialize(magnet=False) - load_deck(deck_plan='default') : this will cre
 then run tasks.
 """
 
+from time import time
 tip_press_increment=0.4
 tip_presses = 3
 
-global tube_vol,deck_plan_
+global tube_vol,deck_plan_,execution_time
 tube_vol = {}
 deck_plan_ = {}
+execution_time = time()
 """
 tube_vol dictionary use position labels '1-A1' or '1-2' as key.
 store corresponding labware_volume class instance, initialized with starting volume, keep track of volume changes.
@@ -264,6 +266,8 @@ def multi_distribute_liquid(volume=0,source=None,target=None,source_vol='0ul',ta
     aspirate_offset, dispense_offset: float, distance in mm of the tip position relative to liquid surface.
     aspirate_speed,dispense_speed: float, speed of pipette in ul/s
     """
+    global execution_time
+    execution_time = time()
     if not isinstance(target, list):
         initialize_volume(source,source_vol)
         if target.lower() == 'trash':
@@ -316,6 +320,8 @@ def single_distribute_liquid(volume=0,source=None,target=None,source_vol='0ul',t
     aspirate_offset, dispense_offset: float, distance in mm of the tip position relative to liquid surface.
     aspirate_speed,dispense_speed: float, speed of pipette in ul/s
     """
+    global execution_time
+    execution_time = time()
     if not isinstance(target, list):
         initialize_volume(source,source_vol)
         if target.lower() == 'trash':
@@ -358,6 +364,8 @@ def multi_serial_dilution(volume=0,position=None,dilution_factor=1,aspirate_offs
     aspirate_speed,dispense_speed: float, speed of pipette in ul/s
     mix_no : int, how many times to mix.
     """
+    global execution_time
+    execution_time = time()
     if not isinstance(volume,list):
         trans_vol = volume/(dilution_factor-1)
         total_vol = volume + trans_vol
@@ -392,6 +400,8 @@ def single_serial_dilution(volume=0,position=None,dilution_factor=1,aspirate_off
     aspirate_speed,dispense_speed: float, speed of pipette in ul/s
     mix_no : int, how many times to mix.
     """
+    global execution_time
+    execution_time = time()
     if not isinstance(volume,list):
         trans_vol = volume/(dilution_factor-1)
         total_vol = volume + trans_vol
@@ -423,6 +433,8 @@ def multi_mix(position=None,volume=100,mix_no=5,tip_location=None,drop_tip=True,
     mix_no : int, how many times to pipette
     change_tip: boolean, False use the same tip, True change tip after each mix.
     """
+    global execution_time
+    execution_time = time()
     multi_pipette.set_flow_rate(aspirate=aspirate_speed,dispense=dispense_speed)
     if not isinstance(position, list):
         label,_,labware=lab_deck_parser(position)
@@ -458,6 +470,8 @@ def single_mix(position=None,volume=100,mix_no=5,change_tip=False,aspirate_speed
     mix_no : int, how many times to pipette
     change_tip: boolean, False use the same tip, True change tip after each mix.
     """
+    global execution_time
+    execution_time = time()
     single_pipette.set_flow_rate(aspirate=aspirate_speed,dispense=dispense_speed)
     if not isinstance(position, list):
         label,_,labware=lab_deck_parser(position)
@@ -501,7 +515,10 @@ def on_hold(time=60):
     """
     multi_pipette.delay(seconds=time)
 
-
+def wait_for(delay=60):
+    global execution_time
+    currenttime = time()
+    multi_pipette.delay(seconds = max(1, delay - (currenttime-execution_time)))
 
 def mag_wash(wash_location=None,buffer_location=None,buffer_vol='5ml',wash_vol= 150,wash_no=3, mix_no=5, mag_height=13.3, mag_time=60, **kwarg):
     wash_no=int(wash_no)
@@ -545,7 +562,6 @@ def mag_wash_v2(wash_location=None,buffer_location=None,buffer_vol='5ml',wash_vo
     multi_pipette.delay(seconds=mag_time)
     multi_distribute_liquid(volume=150,source=wash_location,target='trash',remove_residual=True)
     mag_deck.disengage()
-
     wash_round=int(wash_no/3)
     for j in range(wash_round+1):
         buffer_tip=None
