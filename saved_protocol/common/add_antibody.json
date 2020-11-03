@@ -1,0 +1,102 @@
+{
+    "0-1": {
+        "name": "initialize_deck",
+        "parameter": {
+            "deck_plan": "default-mag"
+        }
+    },
+    "0-2": {
+        "name": "initialize_tip",
+        "parameter": {
+            "single_tip_starting_position": "A1",
+            "multi_tip_starting_position": "*a1"
+        }
+    },
+    "1": {
+        "parameter": {
+            "operation": true,
+            "height": 13.3
+        },
+        "name": "tm"
+    },
+    "2": {
+        "parameter": {
+            "time": 120.0
+        },
+        "name": "oh"
+    },
+    "3": {
+        "parameter": {
+            "source": "*magnet 5-1:12",
+            "source_vol": "150UL",
+            "target": "TRASH",
+            "volume": 150.0,
+            "target_vol": 0.0,
+            "aspirate_offset": -1.0,
+            "dispense_offset": 5.0,
+            "aspirate_speed": 150.0,
+            "dispense_speed": 150.0
+        },
+        "name": "md"
+    },
+    "4": {
+        "parameter": {
+            "operation": false,
+            "height": 13.3
+        },
+        "name": "tm"
+    },
+    "5": {
+        "parameter": {
+            "source": "* buffer position",
+            "source_vol": "*buffer volume",
+            "target": "* manget plate",
+            "volume": 140.0,
+            "target_vol": 0.0,
+            "aspirate_offset": -1.0,
+            "dispense_offset": 5.0,
+            "aspirate_speed": 150.0,
+            "dispense_speed": 150.0
+        },
+        "name": "md"
+    },
+    "6": {
+        "parameter": {
+            "operation": true,
+            "height": 13.3
+        },
+        "name": "tm"
+    },
+    "7": {
+        "parameter": {
+            "time": 120.0
+        },
+        "name": "oh"
+    },
+    "8": {
+        "parameter": {
+            "source": "*magnet position",
+            "source_vol": "140UL",
+            "target": "TRASH",
+            "volume": 140.0,
+            "target_vol": 0.0
+        },
+        "name": "md"
+    },
+    "9": {
+        "parameter": {
+            "operation": false
+        },
+        "name": "tm"
+    },
+    "10": {
+        "parameter": {
+            "source": "*antibody position",
+            "source_vol": "*antibody vol",
+            "target": "*magnet plate",
+            "volume": 100.0,
+            "target_vol": 0.0
+        },
+        "name": "md"
+    }
+}

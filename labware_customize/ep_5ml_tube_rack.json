@@ -1,0 +1,139 @@
+{
+    "ordering": [
+        [
+            "A1",
+            "B1",
+            "C1"
+        ],
+        [
+            "A2",
+            "B2",
+            "C2"
+        ],
+        [
+            "A3",
+            "B3"
+        ],
+        [
+            "A4",
+            "B4"
+        ]
+    ],
+    "wells": {
+        "A1": {
+            "diameter": 13.5,
+            "depth": 55.3,
+            "total-liquid-volume": 5300,
+            "width": 13.5,
+            "y": 50.0,
+            "x": 0,
+            "z": 16.75,
+            "length": 13.5,
+            "height": 60
+        },
+        "B4": {
+            "diameter": 26.9,
+            "depth": 112.6,
+            "total-liquid-volume": 50000,
+            "width": 26.9,
+            "y": 0.8,
+            "x": 86.5,
+            "z": 4,
+            "length": 26.9,
+            "height": 112.6
+        },
+        "A3": {
+            "diameter": 26.9,
+            "depth": 112.6,
+            "total-liquid-volume": 50000,
+            "width": 26.9,
+            "y": 36.3,
+            "x": 51.0,
+            "z": 4,
+            "length": 26.9,
+            "height": 112.6
+        },
+        "A2": {
+            "diameter": 13.5,
+            "depth": 55.3,
+            "total-liquid-volume": 5300,
+            "width": 13.5,
+            "y": 50.0,
+            "x": 25.0,
+            "z": 16.75,
+            "length": 13.5,
+            "height": 60
+        },
+        "A4": {
+            "diameter": 26.9,
+            "depth": 112.6,
+            "total-liquid-volume": 50000,
+            "width": 26.9,
+            "y": 36.3,
+            "x": 86.5,
+            "z": 4,
+            "length": 26.9,
+            "height": 112.6
+        },
+        "B2": {
+            "diameter": 13.5,
+            "depth": 55.3,
+            "total-liquid-volume": 5300,
+            "width": 13.5,
+            "y": 25.0,
+            "x": 25.0,
+            "z": 16.75,
+            "length": 13.5,
+            "height": 60
+        },
+        "B3": {
+            "diameter": 26.9,
+            "depth": 112.6,
+            "total-liquid-volume": 50000,
+            "width": 26.9,
+            "y": 0.8,
+            "x": 51.0,
+            "z": 4,
+            "length": 26.9,
+            "height": 112.6
+        },
+        "C2": {
+            "diameter": 13.5,
+            "depth": 55.3,
+            "total-liquid-volume": 5300,
+            "width": 13.5,
+            "y": 0,
+            "x": 25.0,
+            "z": 16.75,
+            "length": 13.5,
+            "height": 60
+        },
+        "C1": {
+            "diameter": 13.5,
+            "depth": 55.3,
+            "total-liquid-volume": 5300,
+            "width": 13.5,
+            "y": 0,
+            "x": 0,
+            "z": 16.75,
+            "length": 13.5,
+            "height": 60
+        },
+        "B1": {
+            "diameter": 13.5,
+            "depth": 55.3,
+            "total-liquid-volume": 5300,
+            "width": 13.5,
+            "y": 25.0,
+            "x": 0,
+            "z": 16.75,
+            "length": 13.5,
+            "height": 60
+        }
+    },
+    "metadata": {
+        "displayCategory": "tube-rack",
+        "name": "ep_5ml_tube_rack",
+        "format": "irregular"
+    }
+}

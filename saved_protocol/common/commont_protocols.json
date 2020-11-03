@@ -1,0 +1,324 @@
+{   "preset": 1,
+    "serial_dilution":
+    {
+    "0-1": {
+        "name": "initialize_deck",
+        "parameter": {
+            "deck_plan": "default-mag"
+        }
+    },
+    "0-2": {
+        "name": "initialize_tip",
+        "parameter": {
+            "single_tip_starting_position": "A1",
+            "multi_tip_starting_position": "*m"
+        }
+    },
+    "1": {
+        "parameter": {
+            "source": "bufferposition",
+            "source_vol": "buffervolume",
+            "target": "addbufferloc",
+            "volume": 100.0,
+            "target_vol": 0.0
+        },
+        "name": "md"
+    },
+    "2": {
+        "parameter": {
+            "position": "serialdilutionposition",
+            "dilution_factor": "df",
+            "volume": 100.0
+        },
+        "name": "msd"
+    }
+    },
+
+
+"add_beads":
+{
+"0-1": {
+    "name": "initialize_deck",
+    "parameter": {
+        "deck_plan": "default-mag"
+    }
+},
+"0-2": {
+    "name": "initialize_tip",
+    "parameter": {
+        "single_tip_starting_position": "A1",
+        "multi_tip_starting_position": "*m"
+    }
+},
+"1": {
+    "parameter": {
+        "source": "beadsposition",
+        "source_vol": "beadsvolume",
+        "target": "addbeadsposition",
+        "volume": 50.0,
+        "target_vol": 100.0
+    },
+    "name": "md"
+}
+},
+
+"add_TMB":
+{
+"0-1": {
+    "name": "initialize_deck",
+    "parameter": {
+        "deck_plan": "default-mag"
+    }
+},
+"0-2": {
+    "name": "initialize_tip",
+    "parameter": {
+        "single_tip_starting_position": "A1",
+        "multi_tip_starting_position": "*m"
+    }
+},
+"1": {
+    "parameter": {
+        "source": "TMB_in_well",
+        "source_vol": "tmbvolume",
+        "target": "addbeadsposition",
+        "volume": "TMB_to_add"
+    },
+    "name": "md"
+},
+"2": {
+    "parameter": {
+        "delay": "develop_time"
+    },
+    "name": "wf"
+},
+"3": {
+    "parameter": {
+        "source": "stop_in_well",
+        "source_vol": "stopvolume",
+        "target": "addbeadsposition",
+        "volume": "stop_to_add"
+    },
+    "name": "md"
+}
+},
+
+
+"IC50_test":
+{
+"0-1": {
+    "name": "initialize_deck",
+    "parameter": {
+        "deck_plan": "default-mag"
+    }
+},
+"0-2": {
+    "name": "initialize_tip",
+    "parameter": {
+        "single_tip_starting_position": "A1",
+        "multi_tip_starting_position": "*m"
+    }
+},
+"1": {
+    "parameter": {
+        "source": "bufferposition",
+        "source_vol": "buffervolume",
+        "target": "addbufferloc",
+        "volume": 100.0,
+        "target_vol": 0.0
+    },
+    "name": "md"
+},
+"2": {
+    "parameter": {
+        "position": "serialdilutionposition",
+        "dilution_factor": "df",
+        "volume": 100.0
+    },
+    "name": "msd"
+},
+"3": {
+    "parameter": {
+        "source": "beadsposition",
+        "source_vol": "beadsvolume",
+        "target": "addbeadsposition",
+        "volume": 50.0,
+        "target_vol": 100.0
+    },
+    "name": "md"
+}
+},
+
+
+
+"add_antibody":
+{
+    "0-1": {
+        "name": "initialize_deck",
+        "parameter": {
+            "deck_plan": "default-mag"
+        }
+    },
+    "0-2": {
+        "name": "initialize_tip",
+        "parameter": {
+            "single_tip_starting_position": "A1",
+            "multi_tip_starting_position": "*a1"
+        }
+    },
+    "1": {
+        "parameter": {
+            "operation": true,
+            "height": "magnetheight"
+        },
+        "name": "tm"
+    },
+    "2": {
+        "parameter": {
+            "time": "magnettime"
+        },
+        "name": "oh"
+    },
+    "3": {
+        "parameter": {
+            "source": "magplate",
+            "source_vol": "150UL",
+            "target": "TRASH",
+            "volume": 150.0,
+            "target_vol": 10000.0,
+            "aspirate_offset": -1.0,
+            "dispense_offset": 5.0,
+            "aspirate_speed": 150.0,
+            "dispense_speed": 150.0
+        },
+        "name": "md"
+    },
+    "4": {
+        "parameter": {
+            "operation": false
+        },
+        "name": "tm"
+    },
+    "5": {
+        "parameter": {
+            "source": "bufferposition",
+            "source_vol": "15ML",
+            "target": "magplate",
+            "volume": 140.0,
+            "target_vol": 0.0,
+            "aspirate_offset": -1.0,
+            "dispense_offset": 5.0,
+            "aspirate_speed": 150.0,
+            "dispense_speed": 150.0
+        },
+        "name": "md"
+    },
+    "6": {
+        "parameter": {
+            "operation": true,
+            "height": "magnetheight"
+        },
+        "name": "tm"
+    },
+    "7": {
+        "parameter": {
+            "time": "magnettime"
+        },
+        "name": "oh"
+    },
+    "8": {
+        "parameter": {
+            "source": "magplate",
+            "source_vol": "140UL",
+            "target": "TRASH",
+            "volume": 140.0,
+            "target_vol": 10000.0
+        },
+        "name": "md"
+    },
+    "9": {
+        "parameter": {
+            "operation": false
+        },
+        "name": "tm"
+    },
+    "10": {
+        "parameter": {
+            "source": "antibodyposition",
+            "source_vol": "antibodyvolume",
+            "target": "magplate",
+            "volume": 100.0,
+            "target_vol": 0.0
+        },
+        "name": "md"
+    }
+},
+
+
+
+"resuspend":
+{
+    "0-1": {
+        "name": "initialize_deck",
+        "parameter": {
+            "deck_plan": "default-mag"
+        }
+    },
+    "0-2": {
+        "name": "initialize_tip",
+        "parameter": {
+            "single_tip_starting_position": "A1",
+            "multi_tip_starting_position": "*a1"
+        }
+    },
+    "1": {
+        "parameter": {
+            "operation": true,
+            "height": "magnetheight"
+        },
+        "name": "tm"
+    },
+    "2": {
+        "parameter": {
+            "time": "magnettime"
+        },
+        "name": "oh"
+    },
+    "3": {
+        "parameter": {
+            "source": "magplate",
+            "source_vol": "150UL",
+            "target": "TRASH",
+            "volume": 150.0,
+            "target_vol": 10000.0,
+            "aspirate_offset": -1.0,
+            "dispense_offset": 5.0,
+            "aspirate_speed": 150.0,
+            "dispense_speed": 150.0
+        },
+        "name": "md"
+    },
+    "4": {
+        "parameter": {
+            "operation": false
+        },
+        "name": "tm"
+    },
+    "5": {
+        "parameter": {
+            "source": "bufferposition",
+            "source_vol": "15ML",
+            "target": "magplate",
+            "volume": 140.0,
+            "target_vol": 0.0,
+            "aspirate_offset": -1.0,
+            "dispense_offset": 5.0,
+            "aspirate_speed": 150.0,
+            "dispense_speed": 150.0
+        },
+        "name": "md"
+    }
+}
+
+
+}
